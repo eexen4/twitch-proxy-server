@@ -9,6 +9,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing endpoint parameter" });
   }
 
+data.data.forEach(clip => {
+  console.log(`<iframe src="https://clips.twitch.tv/embed?clip=${clip.id}&parent=twoja-strona.github.io" allowfullscreen></iframe>`);
+});
+
+
   try {
     // Get OAuth Token
     const tokenResponse = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`, {
