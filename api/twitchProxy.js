@@ -9,8 +9,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing endpoint parameter" });
   }
 
-
-
   try {
     // Get OAuth Token
     const tokenResponse = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${clientId}&client_secret=${clientSecret}&grant_type=client_credentials`, {
@@ -19,19 +17,36 @@ export default async function handler(req, res) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    const apiUrl = `https://api.twitch.tv/helix/${endpoint}?${params}`;
+    let allData = [];
+    let pagination = '';
+    let pageCounter = 0;
+    const maxPages = 6; // Możesz zwiększyć jeśli chcesz (5 x 50 = 250 klipów max)
 
-    const twitchResponse = await fetch(apiUrl, {
-      headers: {
-        "Client-ID": clientId,
-        "Authorization": `Bearer ${accessToken}`,
+    do {
+      const apiUrl = `https://api.twitch.tv/helix/${endpoint}?${params}${pagination ? `&after=${pagination}` : ''}`;
+
+      const twitchResponse = await fetch(apiUrl, {
+        headers: {
+          "Client-ID": clientId,
+          "Authorization": `Bearer ${accessToken}`,
+        }
+      });
+
+      const data = await twitchResponse.json();
+
+      if (data.data) {
+        allData = allData.concat(data.data);
       }
-    });
 
-    const data = await twitchResponse.json();
+      pagination = data.pagination?.cursor || '';
+      pageCounter++;
+
+    } while (pagination && pageCounter < maxPages);
 
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(200).json(data);
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(200).json({ data: allData });
 
   } catch (error) {
     console.error("Error contacting Twitch API:", error);
