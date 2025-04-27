@@ -9,9 +9,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing endpoint parameter" });
   }
 
-data.data.forEach(clip => {
-  console.log(`<iframe src="https://clips.twitch.tv/embed?clip=${clip.id}&parent=twoja-strona.github.io" allowfullscreen></iframe>`);
-});
 
 
   try {
