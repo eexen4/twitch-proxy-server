@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     let allData = [];
     let pagination = '';
     let pageCounter = 0;
-    const maxPages = 6; // Możesz zwiększyć jeśli chcesz (5 x 50 = 250 klipów max)
+    const maxPages = 12; // Możesz zwiększyć jeśli chcesz (5 x 50 = 250 klipów max)
 
     do {
       const apiUrl = `https://api.twitch.tv/helix/${endpoint}?${params}${pagination ? `&after=${pagination}` : ''}`;
